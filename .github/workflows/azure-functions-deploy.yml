@@ -1,12 +1,13 @@
-name: Deploy Azure Function
+name: Deploy Azure Function - serverlesscosmosdb
 
 on:
   push:
     branches:
-      - main  # Change if using a different branch
+      - main  # Automatically deploy on push to main branch
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +17,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'  # Use the Python version of your Function App
+          python-version: '3.11'  # Adjust if needed
 
       - name: Install dependencies
         run: |
@@ -26,7 +27,7 @@ jobs:
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
-          app-name: "serverlesscosmosdb"  # Your Azure Function App Name
+          app-name: "serverlesscosmosdb"  # Azure Function App Name
           slot-name: "Production"
           package: .
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
