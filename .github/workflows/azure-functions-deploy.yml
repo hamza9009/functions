@@ -19,22 +19,33 @@ jobs:
         with:
           python-version: '3.11'  # Ensure correct Python version
 
-      # ✅ Step 1: Authenticate to Azure (FIX MISSING CREDENTIALS ERROR)
+      # ✅ Step 1: Authenticate to Azure
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}  # Add this secret in GitHub settings
 
-      # ✅ Step 2: Install dependencies
+      # ✅ Step 2: Configure Azure Function Settings (Including Storage Account)
+      - name: Set Azure Function Configuration
+        run: |
+          az functionapp config appsettings set --name serverlesscosmosdb --resource-group cosmos_db_group \
+            --settings "AzureWebJobsStorage=DefaultEndpointsProtocol=https;AccountName=cosmostwitter;AccountKey=${{ secrets.AZURE_STORAGE_KEY }}" \
+            "WEBSITE_RUN_FROM_PACKAGE=1"
+
+      # ✅ Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # ✅ Step 3: Deploy to Azure Function
+      # ✅ Step 4: Deploy to Azure Functions
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
           app-name: "serverlesscosmosdb"  # Replace with your Function App Name
           slot-name: "Production"
           package: .
+
+      # ✅ Step 5: Restart Azure Function to Apply Changes
+      - name: Restart Azure Function
+        run: az functionapp restart --name serverlesscosmosdb --resource-group cosmos_db_group
