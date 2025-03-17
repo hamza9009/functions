@@ -6,7 +6,7 @@ import jwt
 import uuid
 
 # Secret key for JWT signing (Replace this with an environment variable in production)
-SECRET_KEY = "gdtftu123r4u768ugvcxseuik"
+SECRET_KEY = "gdtftu123r4u768ugghbvcxseuik"
 
 # In-memory session storage (Use Redis or DB for production)
 sessions = {}
